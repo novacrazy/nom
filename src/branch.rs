@@ -158,8 +158,8 @@ macro_rules! alt (
       match $subrule!( $i, $($args)* ) {
         $crate::IResult::Done(i,o)     => $crate::IResult::Done(i,$gen(o)),
         $crate::IResult::Incomplete(x) => $crate::IResult::Incomplete(x),
-        $crate::IResult::Error(_)      => {
-          alt!(__impl $i)
+        $crate::IResult::Error(_e)      => {
+          $crate::IResult::Error(error_node_position!($crate::ErrorKind::Alt,$i,_e))
         }
       }
     }
@@ -174,8 +174,8 @@ macro_rules! alt (
       match $subrule!( $i, $($args)* ) {
         $crate::IResult::Done(i,o)     => $crate::IResult::Done(i,o),
         $crate::IResult::Incomplete(x) => $crate::IResult::Incomplete(x),
-        $crate::IResult::Error(_)      => {
-          alt!(__impl $i)
+        $crate::IResult::Error(_e)      => {
+          $crate::IResult::Error(error_node_position!($crate::ErrorKind::Alt,$i,_e))
         }
       }
     }
