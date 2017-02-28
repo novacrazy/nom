@@ -786,11 +786,19 @@ macro_rules! sep (
 
 use std::ops::{Range,RangeFrom,RangeTo};
 use internal::IResult;
+
 #[allow(unused_imports)]
 pub fn sp<'a,T>(input:T) -> IResult<T, T> where
   T: ::traits::Slice<Range<usize>>+::traits::Slice<RangeFrom<usize>>+::traits::Slice<RangeTo<usize>>,
   T: ::traits::InputIter+::traits::InputLength {
     eat_separator!(input, &b" \t\r\n"[..])
+}
+
+#[allow(unused_imports)]
+pub fn spe<'a,T,E>(input:T) -> IResult<T, T, E> where
+    T: ::traits::Slice<Range<usize>>+::traits::Slice<RangeFrom<usize>>+::traits::Slice<RangeTo<usize>>,
+    T: ::traits::InputIter+::traits::InputLength {
+  eat_separator!(input, &b" \t\r\n"[..])
 }
 
 /// `ws!(I -> IResult<I,O>) => I -> IResult<I, O>`
@@ -826,6 +834,16 @@ macro_rules! ws (
     {
       use $crate::sp;
       sep!($i, sp, $($args)*)
+    }
+  )
+);
+
+#[macro_export]
+macro_rules! wse (
+  ($i:expr, $($args:tt)*) => (
+    {
+      use $crate::spe;
+      sep!($i, spe, $($args)*)
     }
   )
 );
