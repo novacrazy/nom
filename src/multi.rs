@@ -218,8 +218,8 @@ macro_rules! many1(
     {
       use $crate::InputLength;
       match $submac!($i, $($args)*) {
-        $crate::IResult::Error(_)      => $crate::IResult::Error(
-          error_position!($crate::ErrorKind::Many1,$i)
+        $crate::IResult::Error(e)      => $crate::IResult::Error(
+          error_node_position!($crate::ErrorKind::Many1,$i,e)
         ),
         $crate::IResult::Incomplete(i) => $crate::IResult::Incomplete(i),
         $crate::IResult::Done(i1,o1)   => {
@@ -318,8 +318,8 @@ macro_rules! many_till(
           },
           _                           => {
             match $submac1!(input, $($args1)*) {
-              $crate::IResult::Error(_)                            => {
-                ret = $crate::IResult::Error(error_position!($crate::ErrorKind::ManyTill,input));
+              $crate::IResult::Error(e)                            => {
+                ret = $crate::IResult::Error(error_node_position!($crate::ErrorKind::ManyTill,input,e));
                 break;
               },
               $crate::IResult::Incomplete($crate::Needed::Unknown) => {
@@ -388,7 +388,7 @@ macro_rules! many_m_n(
       let mut res          = ::std::vec::Vec::with_capacity($m);
       let mut input        = $i;
       let mut count: usize = 0;
-      let mut err          = false;
+      let mut err          = ::std::option::Option::None;
       let mut incomplete: ::std::option::Option<$crate::Needed> = ::std::option::Option::None;
       loop {
         if count == $n { break }
@@ -402,8 +402,8 @@ macro_rules! many_m_n(
             input  = i;
             count += 1;
           }
-          $crate::IResult::Error(_)                    => {
-            err = true;
+          $crate::IResult::Error(e)                    => {
+            err = ::std::option::Option::Some(e);
             break;
           },
           $crate::IResult::Incomplete($crate::Needed::Unknown) => {
@@ -423,8 +423,8 @@ macro_rules! many_m_n(
       }
 
       if count < $m {
-        if err {
-          $crate::IResult::Error(error_position!($crate::ErrorKind::ManyMN,$i))
+        if let ::std::option::Option::Some(e) = err {
+          $crate::IResult::Error(error_node_position!($crate::ErrorKind::ManyMN,$i,e))
         } else {
           match incomplete {
             ::std::option::Option::Some(i) => $crate::IResult::Incomplete(i),
