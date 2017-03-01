@@ -531,7 +531,7 @@ macro_rules! map_res (
         $crate::IResult::Incomplete($crate::Needed::Size(i)) => $crate::IResult::Incomplete($crate::Needed::Size(i)),
         $crate::IResult::Done(i, o)                          => match $submac2!(o, $($args2)*) {
           Ok(output) => $crate::IResult::Done(i, output),
-          Err(_)     => $crate::IResult::Error(error_position!($crate::ErrorKind::MapRes, $i))
+          Err(e)     => $crate::IResult::Error(error_node_position!($crate::ErrorKind::MapRes, $i, e))
         }
       }
     }
